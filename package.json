@@ -4,7 +4,13 @@
   "description": "Landing page for Votigram - Decentralised Civic Engagement platform",
   "scripts": {
     "dev": "serve public",
-    "start": "serve public"
+    "dev:static": "serve public",
+    "start": "serve public",
+    "build": "vercel build",
+    "setup-db": "node setup-env.js",
+    "verify-db": "node verify-db.js",
+    "view-waitlist": "node view-waitlist.js",
+    "start-server": "node server.js"
   },
   "keywords": [
     "votigram",
@@ -15,6 +21,15 @@
   "author": "Votigram Team",
   "license": "MIT",
   "devDependencies": {
-    "serve": "^14.2.4"
+    "serve": "^14.2.4",
+    "vercel": "^32.5.0"
+  },
+  "dependencies": {
+    "@vercel/node": "^2.15.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "nodemailer": "^6.10.1"
   }
 }
