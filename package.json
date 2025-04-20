@@ -3,12 +3,18 @@
   "version": "1.0.0",
   "description": "Landing page for Votigram - Decentralised Civic Engagement platform",
   "scripts": {
-    "dev": "serve public"
+    "dev": "serve public",
+    "start": "serve public"
   },
-  "keywords": ["votigram", "blockchain", "voting", "civic engagement"],
+  "keywords": [
+    "votigram",
+    "blockchain",
+    "voting",
+    "civic engagement"
+  ],
   "author": "Votigram Team",
   "license": "MIT",
   "devDependencies": {
-    "serve": "^14.2.1"
+    "serve": "^14.2.4"
   }
-} 
+}
