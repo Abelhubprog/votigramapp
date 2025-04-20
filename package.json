@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Landing page for Votigram - Decentralised Civic Engagement platform",
   "scripts": {
-    "dev": "serve public",
+    "dev": "next dev",
     "dev:static": "serve public",
-    "start": "serve public",
-    "build": "vercel build",
+    "start": "next start",
+    "build": "next build",
     "setup-db": "node setup-env.js",
     "verify-db": "node verify-db.js",
     "view-waitlist": "node view-waitlist.js",
