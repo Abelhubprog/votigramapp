@@ -3076,9 +3076,9 @@
                 step1.classList.remove('active');
                 step2.classList.add('active');
                 
+                let response; // Define response outside try block to access in catch
                 try {
-                    // Make API call to backend
-                    const response = await fetch('/api/waitlist', {
+                    response = await fetch('https://cqvdfymxibuogchuchwb.supabase.co/functions/v1/rapid-worker', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -3089,26 +3089,42 @@
                         })
                     });
                     
-                    const result = await response.json();
-                    
                     if (!response.ok) {
-                        throw new Error(result.message || 'Error submitting form');
+                        // Attempt to get a more specific error message from the response body
+                        let errorBody = `Server error: ${response.status} ${response.statusText}`;
+                        try {
+                            const text = await response.text();
+                            // Use text if available and not too long, otherwise keep the status message
+                            errorBody = (text && text.length < 500) ? text : errorBody; 
+                             // Optional: try parsing as JSON if text exists, backend might send structured errors
+                            try {
+                                const jsonError = JSON.parse(text);
+                                if (jsonError && jsonError.message) {
+                                    errorBody = jsonError.message;
+                                }
+                            } catch (jsonParseError) { /* Ignore if not JSON */ }
+                        } catch (readError) {
+                            console.error("Could not read error response body:", readError);
+                        }
+                        throw new Error(errorBody);
                     }
-                    
+
+                    // Only parse JSON if response is ok
+                    const result = await response.json(); // This might still fail if the OK response isn't JSON
+
                     if (!result.success) {
-                        // Field-specific error
-                        if (result.field === 'username') {
+                        // Handle application-level errors returned in JSON
+                         if (result.field === 'username') {
                             usernameError.textContent = result.message;
                         } else if (result.field === 'email') {
                             emailError.textContent = result.message;
                         } else {
-                            usernameError.textContent = result.message;
+                            // Display general error if field is not specified
+                            usernameError.textContent = result.message || 'An unknown error occurred.';
                         }
-                        
-                        // Show form again
                         step2.classList.remove('active');
                         step1.classList.add('active');
-                        return;
+                        return; // Stop execution
                     }
                     
                     // Show success state
@@ -3135,28 +3151,27 @@
                     // Save to localStorage for persistence
                     localStorage.setItem('votigram_waitlist', JSON.stringify({
                         username: result.data.twitterHandle,
-                        email: email,
+                        email: email, // Save the submitted email
                         position: result.data.position,
-                        date: new Date().toISOString()
+                        date: new Date().toISOString(), // Record submission time
+                        estimatedAccessDate: result.data.estimatedAccessDate // Store estimated access date
                     }));
                     
                 } catch (error) {
                     console.error('Error submitting form:', error);
                     
-                    // Log the raw response if it's not JSON
-                    if (error instanceof SyntaxError && error.message.includes('JSON')) {
-                        try {
-                           const textResponse = await response.text(); // Get the raw response text
-                           console.error('Raw non-JSON response received:', textResponse);
-                        } catch (textError) {
-                           console.error('Could not read response text:', textError);
-                        }
-                    }
-                    
                     // Show form again with error
                     step2.classList.remove('active');
                     step1.classList.add('active');
-                    usernameError.textContent = error.message || 'An error occurred. Please try again later.';
+
+                    // Check if it's the specific JSON parsing error after a successful response status
+                    if (response && response.ok && error instanceof SyntaxError && error.message.includes('JSON')) {
+                         usernameError.textContent = 'Received an invalid success response from the server. Please contact support.';
+                         console.error(`Response status: ${response.status}, statusText: ${response.statusText}`);
+                    } else {
+                         // Display the error message thrown earlier or a generic one
+                        usernameError.textContent = error.message || 'An unexpected error occurred. Please try again later.';
+                    }
                 }
             });
 
