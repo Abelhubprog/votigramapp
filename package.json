@@ -1,12 +1,12 @@
 {
   "name": "votigram-landing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Landing page for Votigram - Decentralised Civic Engagement platform",
   "scripts": {
-    "dev": "next dev",
+    "dev": "serve public",
     "dev:static": "serve public",
-    "start": "next start",
-    "build": "next build",
+    "start": "serve public",
+    "build": "echo 'Static site, no build needed'",
     "setup-db": "node setup-env.js",
     "verify-db": "node verify-db.js",
     "view-waitlist": "node view-waitlist.js",
